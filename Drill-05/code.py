@@ -28,6 +28,7 @@ player_running_i_max = 100
 
 player_anim_frame = 0
 player_anim_frame_max = 8
+player_anim_frame_delay = 8
 
 mouse_position_x = 0
 mouse_position_y = 0
@@ -90,11 +91,13 @@ while running:
     back_img.draw(width/2, heigth/2)
     csr_img.draw(mouse_position_x, mouse_position_y)
     if player_is_view_left:
-        char_img.clip_draw(player_anim_frame * 100, 0, 100, 100, player_pos_x, player_pos_y)
+        char_img.clip_draw(int(player_anim_frame/player_anim_frame_delay) * 100, 0, 100, 100, player_pos_x, player_pos_y)
     else:
-        char_img.clip_draw(player_anim_frame * 100, 100, 100, 100, player_pos_x, player_pos_y)
+        char_img.clip_draw(int(player_anim_frame/player_anim_frame_delay) * 100, 100, 100, 100, player_pos_x, player_pos_y)
     input_handling()
     update_move()
+    player_anim_frame = (player_anim_frame + 1) % (player_anim_frame_max * player_anim_frame_delay)
     pico2d.update_canvas()
+    pico2d.delay(0.01)
 
 pico2d.close_canvas()
