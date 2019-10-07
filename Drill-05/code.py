@@ -50,8 +50,8 @@ def input_handling():
     for event in events:
         if event.type == pico2d.SDL_MOUSEBUTTONDOWN and event.button == pico2d.SDL_BUTTON_LEFT:
             x, y = event.x, heigth - 1 - event.y
-            player_source_x = player_pos_y
-            player_source_x = player_pos_y
+            player_source_x = player_pos_x
+            player_source_y = player_pos_y
             player_dest_x = x
             player_dest_y = y
             player_is_running = 0
