@@ -4,6 +4,7 @@ width = 1280
 heigth = 1024
 
 pico2d.open_canvas(1280, 1024)
+pico2d.hide_cursor()
 
 running = True
 
@@ -25,6 +26,9 @@ player_is_view_left = False
 player_running_i = 0
 player_running_i_max = 100
 
+mouse_position_x = 0
+mouse_position_y = 0
+
 def input_handling():
     global running
     global player_source_x
@@ -36,6 +40,8 @@ def input_handling():
     global player_is_running
     global player_running_i
     global heigth
+    global mouse_position_x
+    global mouse_position_y
 
     events = pico2d.get_events()
     for event in events:
@@ -50,8 +56,7 @@ def input_handling():
         elif event.type == pico2d.SDL_KEYDOWN and event.key == pico2d.SDLK_ESCAPE:
             running = False
         elif event.type == pico2d.SDL_MOUSEMOTION:
-            csr_img.draw(event.x, event.y)
-
+            mouse_position_x, mouse_position_y = event.x, heigth - 1 - event.y
     pass
 
 def update_move():
@@ -75,6 +80,7 @@ def update_move():
 
 while running:
     back_img.draw(width/2, heigth/2)
+    csr_img.draw(mouse_position_x, mouse_position_y)
     input_handling()
     pico2d.update_canvas()
 
