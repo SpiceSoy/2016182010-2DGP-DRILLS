@@ -26,6 +26,9 @@ player_is_view_left = False
 player_running_i = 0
 player_running_i_max = 100
 
+player_anim_frame = 0
+player_anim_frame_max = 8
+
 mouse_position_x = 0
 mouse_position_y = 0
 
@@ -81,7 +84,12 @@ def update_move():
 while running:
     back_img.draw(width/2, heigth/2)
     csr_img.draw(mouse_position_x, mouse_position_y)
+    if player_is_view_left:
+        char_img.clip_draw(player_anim_frame * 100, 0, 100, 100, player_pos_x, player_pos_y)
+    else:
+        char_img.clip_draw(player_anim_frame * 100, 100, 100, 100, player_pos_x, player_pos_y)
     input_handling()
+    update_move()
     pico2d.update_canvas()
 
 pico2d.close_canvas()
