@@ -45,6 +45,7 @@ def input_handling():
     global heigth
     global mouse_position_x
     global mouse_position_y
+    global player_is_view_left
 
     events = pico2d.get_events()
     for event in events:
@@ -56,6 +57,10 @@ def input_handling():
             player_dest_y = y
             player_is_running = 0
             player_is_running = True
+            if player_source_x > player_dest_x:
+                player_is_view_left = True
+            else:
+                player_is_view_left = False
         elif event.type == pico2d.SDL_KEYDOWN and event.key == pico2d.SDLK_ESCAPE:
             running = False
         elif event.type == pico2d.SDL_MOUSEMOTION:
