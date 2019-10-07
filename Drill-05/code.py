@@ -9,6 +9,7 @@ running = True
 
 back_img = pico2d.load_image("KPU_GROUND.png")
 char_img = pico2d.load_image("animation_sheet.png")
+csr_img = pico2d.load_image("hand_arrow.png")
 
 player_pos_x = width/2
 player_pos_y = heigth/2
