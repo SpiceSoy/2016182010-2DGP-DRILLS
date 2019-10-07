@@ -33,6 +33,7 @@ player_anim_frame_delay = 8
 mouse_position_x = 0
 mouse_position_y = 0
 
+
 def input_handling():
     global running
     global player_source_x
@@ -57,6 +58,7 @@ def input_handling():
             player_dest_x = x - 20
             player_dest_y = y + 21
             player_is_running = 0
+            player_running_i = 0
             player_is_running = True
             if player_source_x > player_dest_x:
                 player_is_view_left = True
@@ -84,8 +86,9 @@ def update_move():
         player_pos_y = (1-t) * player_source_y + t * player_dest_y
         player_running_i = player_running_i + 1
         if player_running_i > player_running_i_max:
-            player_running_i  = 0
+            player_running_i = 0
             player_is_running = False
+
 
 while running:
     back_img.draw(width/2, heigth/2)
@@ -100,8 +103,8 @@ while running:
         else:
             char_img.clip_draw(int(player_anim_frame/player_anim_frame_delay) * 100, 300, 100, 100, player_pos_x, player_pos_y)
     csr_img.draw(mouse_position_x, mouse_position_y)
-    input_handling()
     update_move()
+    input_handling()
     player_anim_frame = (player_anim_frame + 1) % (player_anim_frame_max * player_anim_frame_delay)
     pico2d.update_canvas()
     pico2d.delay(0.01)
