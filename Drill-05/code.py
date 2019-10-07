@@ -35,18 +35,22 @@ def input_handling():
     global player_dest_y
     global player_is_running
     global player_running_i
+    global heigth
 
     events = pico2d.get_events()
     for event in events:
         if event.type == pico2d.SDL_MOUSEBUTTONDOWN and event.button == pico2d.SDL_BUTTON_LEFT:
+            x, y = event.x, heigth - 1 - event.y
             player_source_x = player_pos_y
             player_source_x = player_pos_y
-            player_dest_x = event.x
-            player_dest_y = event.y
+            player_dest_x = x
+            player_dest_y = y
             player_is_running = 0
             player_is_running = True
         elif event.type == pico2d.SDL_KEYDOWN and event.key == pico2d.SDLK_ESCAPE:
             running = False
+        elif event.type == pico2d.SDL_MOUSEMOTION:
+            csr_img.draw(event.x, event.y)
 
     pass
 
@@ -71,7 +75,7 @@ def update_move():
 
 while running:
     back_img.draw(width/2, heigth/2)
-    pico2d.update_canvas()
     input_handling()
+    pico2d.update_canvas()
 
 pico2d.close_canvas()
