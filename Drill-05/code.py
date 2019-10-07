@@ -53,8 +53,8 @@ def input_handling():
             x, y = event.x, heigth - 1 - event.y
             player_source_x = player_pos_x
             player_source_y = player_pos_y
-            player_dest_x = x
-            player_dest_y = y
+            player_dest_x = x - 20
+            player_dest_y = y + 21
             player_is_running = 0
             player_is_running = True
             if player_source_x > player_dest_x:
