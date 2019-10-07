@@ -23,6 +23,7 @@ player_is_view_left = False
 
 
 def input_handling():
+    global running
     global player_source_x
     global player_source_y
     global player_pos_x
@@ -38,6 +39,8 @@ def input_handling():
             player_dest_x = event.x
             player_dest_y = event.y
             player_is_running = True
+        elif event.type == pico2d.SDL_KEYDOWN and event.key == pico2d.SDLK_ESCAPE:
+            running = False
     pass
 
 while running:
