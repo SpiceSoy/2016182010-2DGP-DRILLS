@@ -8,6 +8,7 @@ pico2d.open_canvas(1280, 1024)
 running = True
 
 back_img = pico2d.load_image("KPU_GROUND.png")
+char_img = pico2d.load_image("animation_sheet.png")
 
 player_pos_x = width/2
 player_pos_y = heigth/2
