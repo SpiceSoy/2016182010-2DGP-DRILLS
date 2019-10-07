@@ -89,11 +89,11 @@ def update_move():
 
 while running:
     back_img.draw(width/2, heigth/2)
-    csr_img.draw(mouse_position_x, mouse_position_y)
     if player_is_view_left:
         char_img.clip_draw(int(player_anim_frame/player_anim_frame_delay) * 100, 0, 100, 100, player_pos_x, player_pos_y)
     else:
         char_img.clip_draw(int(player_anim_frame/player_anim_frame_delay) * 100, 100, 100, 100, player_pos_x, player_pos_y)
+    csr_img.draw(mouse_position_x, mouse_position_y)
     input_handling()
     update_move()
     player_anim_frame = (player_anim_frame + 1) % (player_anim_frame_max * player_anim_frame_delay)
