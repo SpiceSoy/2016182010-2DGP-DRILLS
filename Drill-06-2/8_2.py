@@ -80,7 +80,7 @@ def update_move():
 while running:
     back_img.draw(width/2, heigth/2)
     # 디버깅 용 포지션 띄우는 함수 , 포인트 위치 확인 필요 시 주석 해제하시면 됩니다.
-    draw_csr()
+    # draw_csr()
     if player_is_view_left:
         char_img.clip_draw(int(player_anim_frame/player_anim_frame_delay) * 100, 0, 100, 100, player_pos_x, player_pos_y)
     else:
