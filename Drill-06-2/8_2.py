@@ -1,104 +1,86 @@
-import turtle
+import pico2d
 import random
 
+width = 1280
+heigth = 1024
 
-def stop():
-    turtle.bye()
+pico2d.open_canvas(1280, 1024)
 
+running = True
 
-def prepare_turtle_canvas():
-    turtle.setup(1024, 768)
-    turtle.bgcolor(0.2, 0.2, 0.2)
-    turtle.penup()
-    turtle.hideturtle()
-    turtle.shape('arrow')
-    turtle.shapesize(2)
-    turtle.pensize(5)
-    turtle.color(1, 0, 0)
-    turtle.speed(100)
-    turtle.goto(-500, 0)
-    turtle.pendown()
-    turtle.goto(480, 0)
-    turtle.stamp()
-    turtle.penup()
-    turtle.goto(0, -360)
-    turtle.pendown()
-    turtle.goto(0, 360)
-    turtle.setheading(90)
-    turtle.stamp()
-    turtle.penup()
-    turtle.home()
+back_img = pico2d.load_image("KPU_GROUND.png")
+char_img = pico2d.load_image("animation_sheet.png")
 
-    turtle.shape('circle')
-    turtle.pensize(1)
-    turtle.color(0, 0, 0)
-    turtle.speed(50)
+player_pos_x = width/2
+player_pos_y = heigth/2
 
-    turtle.onkey(stop, 'Escape')
-    turtle.listen()
+player_is_view_left = False
+player_running_i = 0
+player_running_i_max = 100
+
+player_anim_frame = 0
+player_anim_frame_max = 8
+player_anim_frame_delay = 8
+
+player_csr = 0
+points = [(random.randrange(0, width), random.randrange(0, heigth)) for n in range(10)]
 
 
-def draw_big_point(p):
-    turtle.goto(p)
-    turtle.color(0.8, 0.9, 0)
-    turtle.dot(15)
-    turtle.write('     ' + str(p))
+def get_inter_curve_points(prev, p1, p2, next, i):
+    t = i / 100
+    x = ((-t ** 3 + 2 * t ** 2 - t) * prev[0] + (3 * t ** 3 - 5 * t ** 2 + 2) * p1[0] + (
+                -3 * t ** 3 + 4 * t ** 2 + t) * p2[0] + (t ** 3 - t ** 2) * next[0]) / 2
+    y = ((-t ** 3 + 2 * t ** 2 - t) * prev[1] + (3 * t ** 3 - 5 * t ** 2 + 2) * p1[1] + (
+                -3 * t ** 3 + 4 * t ** 2 + t) * p2[1] + (t ** 3 - t ** 2) * next[1]) / 2
+    return x, y
 
 
-def draw_point(p):
-    turtle.goto(p)
-    turtle.dot(5, random.random(), random.random(), random.random())
-
-
-def draw_curve_3_points(p1, p2, p3):
-    draw_big_point(p1)
-    draw_big_point(p2)
-    draw_big_point(p3)
-
-    for i in range(0, 100, 2):
-        t = i / 100
-        x = (2 * t ** 2 - 3 * t + 1) * p1[0] + (-4 * t ** 2 + 4 * t) * p2[0] + (2 * t ** 2 - t) * p3[0]
-        y = (2 * t ** 2 - 3 * t + 1) * p1[1] + (-4 * t ** 2 + 4 * t) * p2[1] + (2 * t ** 2 - t) * p3[1]
-        draw_point((x, y))
-    draw_point(p3)
+def input_handling():
+    global running
+    events = pico2d.get_events()
+    for event in events:
+        if event.type == pico2d.SDL_KEYDOWN and event.key == pico2d.SDLK_ESCAPE:
+            running = False
     pass
 
 
-def draw_curve_4_points(p1, p2, p3, p4):
-    draw_big_point(p1)
-    draw_big_point(p2)
-    draw_big_point(p3)
-    draw_big_point(p4)
-
-    # draw p1-p2
-    for i in range(0, 50, 2):
-        t = i / 100
-        x = (2 * t ** 2 - 3 * t + 1) * p1[0] + (-4 * t ** 2 + 4 * t) * p2[0] + (2 * t ** 2 - t) * p3[0]
-        y = (2 * t ** 2 - 3 * t + 1) * p1[1] + (-4 * t ** 2 + 4 * t) * p2[1] + (2 * t ** 2 - t) * p3[1]
-        draw_point((x, y))
-    draw_point(p2)
-
-    # draw p2-p3
-    for i in range(0, 100, 2):
-        t = i / 100
-        x = ((-t ** 3 + 2 * t ** 2 - t) * p1[0] + (3 * t ** 3 - 5 * t ** 2 + 2) * p2[0] + (
-                    -3 * t ** 3 + 4 * t ** 2 + t) * p3[0] + (t ** 3 - t ** 2) * p4[0]) / 2
-        y = ((-t ** 3 + 2 * t ** 2 - t) * p1[1] + (3 * t ** 3 - 5 * t ** 2 + 2) * p2[1] + (
-                    -3 * t ** 3 + 4 * t ** 2 + t) * p3[1] + (t ** 3 - t ** 2) * p4[1]) / 2
-        draw_point((x, y))
-    draw_point(p3)
-
-    # draw p3-p4
-    for i in range(50, 100, 2):
-        t = i / 100
-        x = (2 * t ** 2 - 3 * t + 1) * p2[0] + (-4 * t ** 2 + 4 * t) * p3[0] + (2 * t ** 2 - t) * p4[0]
-        y = (2 * t ** 2 - 3 * t + 1) * p2[1] + (-4 * t ** 2 + 4 * t) * p3[1] + (2 * t ** 2 - t) * p4[1]
-        draw_point((x, y))
-    draw_point(p4)
+def update_move():
+    global player_pos_x
+    global player_pos_y
+    global player_running_i
+    global player_running_i_max
+    global player_csr
+    global player_is_view_left
+    global points
+    pos = get_inter_curve_points(
+        points[(player_csr - 1) % len(points)],
+        points[(player_csr) % len(points)],
+        points[(player_csr + 1) % len(points)],
+        points[(player_csr + 2) % len(points)],
+        player_running_i
+    )
+    player_running_i = player_running_i + 1
+    if player_running_i > player_running_i_max:
+        player_running_i = player_running_i % player_running_i_max
+    if player_pos_x > pos[0]:
+        player_is_view_left = True
+    player_pos_x = pos[0]
+    player_pos_y = pos[1]
 
 
-prepare_turtle_canvas()
+while running:
+    back_img.draw(width/2, heigth/2)
+    if player_is_view_left:
+        char_img.clip_draw(int(player_anim_frame/player_anim_frame_delay) * 100, 0, 100, 100, player_pos_x, player_pos_y)
+    else:
+        char_img.clip_draw(int(player_anim_frame/player_anim_frame_delay) * 100, 100, 100, 100, player_pos_x, player_pos_y)
+    update_move()
+    input_handling()
+    player_anim_frame = (player_anim_frame + 1) % (player_anim_frame_max * player_anim_frame_delay)
+    pico2d.update_canvas()
+    pico2d.delay(0.01)
 
-draw_curve_4_points((-350, -100), (-50, 200), (150, -100), (350, 300))
+pico2d.close_canvas()
 
-turtle.done()
+
+
