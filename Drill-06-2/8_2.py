@@ -62,6 +62,7 @@ def update_move():
     player_running_i = player_running_i + 1
     if player_running_i > player_running_i_max:
         player_running_i = player_running_i % player_running_i_max
+        player_csr += 1
     if player_pos_x > pos[0]:
         player_is_view_left = True
     player_pos_x = pos[0]
