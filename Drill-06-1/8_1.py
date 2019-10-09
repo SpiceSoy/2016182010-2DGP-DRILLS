@@ -65,8 +65,10 @@ def draw_inter_curve(prev, p1, p2, next):
 
 prepare_turtle_canvas()
 
+points = [(-300, 200), (400, 350), (300, -300), (-200, -200)]
+csr_index = 0
 while True:
+    
 
-draw_curve_4_points((-350, -100), (-50, 200), (150, -100), (350, 300))
 
 turtle.done()
