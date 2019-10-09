@@ -12,8 +12,7 @@ back_img = pico2d.load_image("KPU_GROUND.png")
 csr_img = pico2d.load_image("hand_arrow.png")
 char_img = pico2d.load_image("animation_sheet.png")
 
-player_pos_x = width/2
-player_pos_y = heigth/2
+
 
 player_is_view_left = False
 player_running_i = 0
@@ -27,6 +26,8 @@ player_csr = 0
 padding = 50
 points = [(random.randrange(0 + padding, width - padding), random.randrange(0 + padding, heigth - padding)) for n in range(10)]
 
+player_pos_x = points[0][0]
+player_pos_y = points[0][1]
 
 def get_inter_curve_points(prev, p1, p2, next, i):
     t = i / 100
@@ -72,13 +73,16 @@ def update_move():
         player_csr %= len(points)
     if player_pos_x > pos[0]:
         player_is_view_left = True
+    elif player_pos_x < pos[0]:
+        player_is_view_left = False
     player_pos_x = pos[0]
     player_pos_y = pos[1]
 
 
 while running:
     back_img.draw(width/2, heigth/2)
-    draw_csr()
+    # 디버깅 용 포지션 띄우는 함수 , 포인트 위치 확인 필요 시 주석 해제하시면 됩니다.
+    # draw_csr()
     if player_is_view_left:
         char_img.clip_draw(int(player_anim_frame/player_anim_frame_delay) * 100, 0, 100, 100, player_pos_x, player_pos_y)
     else:
