@@ -52,8 +52,6 @@ def draw_point(p):
 
 def draw_inter_curve(prev, p1, p2, next):
     # draw p2-p3
-    draw_big_point(p1)
-    draw_big_point(p2)
     for i in range(0, 100, 2):
         t = i / 100
         x = ((-t ** 3 + 2 * t ** 2 - t) * prev[0] + (3 * t ** 3 - 5 * t ** 2 + 2) * p1[0] + (
@@ -66,9 +64,21 @@ def draw_inter_curve(prev, p1, p2, next):
 prepare_turtle_canvas()
 
 points = [(-300, 200), (400, 350), (300, -300), (-200, -200)]
-csr_index = 0
+csr_index = 4
+for pt in points:
+    draw_big_point(pt)
+
 while True:
-    
+    draw_inter_curve(
+        points[(csr_index-1) % 4],
+        points[csr_index % 4],
+        points[(csr_index + 1) % 4],
+        points[(csr_index + 2) % 4]
+    )
+    csr_index += 1
+    if csr_index > len(points):
+        csr_index -= len(points)
+
 
 
 turtle.done()
