@@ -9,6 +9,7 @@ pico2d.open_canvas(1280, 1024)
 running = True
 
 back_img = pico2d.load_image("KPU_GROUND.png")
+csr_img = pico2d.load_image("hand_arrow.png")
 char_img = pico2d.load_image("animation_sheet.png")
 
 player_pos_x = width/2
@@ -23,7 +24,8 @@ player_anim_frame_max = 8
 player_anim_frame_delay = 8
 
 player_csr = 0
-points = [(random.randrange(0, width), random.randrange(0, heigth)) for n in range(10)]
+padding = 50
+points = [(random.randrange(0 + padding, width - padding), random.randrange(0 + padding, heigth - padding)) for n in range(10)]
 
 
 def get_inter_curve_points(prev, p1, p2, next, i):
@@ -43,6 +45,10 @@ def input_handling():
             running = False
     pass
 
+def draw_csr():
+    global points
+    for pt in points:
+        csr_img.draw(pt[0],pt[1])
 
 def update_move():
     global player_pos_x
@@ -63,6 +69,7 @@ def update_move():
     if player_running_i > player_running_i_max:
         player_running_i = player_running_i % player_running_i_max
         player_csr += 1
+        player_csr %= len(points)
     if player_pos_x > pos[0]:
         player_is_view_left = True
     player_pos_x = pos[0]
@@ -71,6 +78,7 @@ def update_move():
 
 while running:
     back_img.draw(width/2, heigth/2)
+    draw_csr()
     if player_is_view_left:
         char_img.clip_draw(int(player_anim_frame/player_anim_frame_delay) * 100, 0, 100, 100, player_pos_x, player_pos_y)
     else:
