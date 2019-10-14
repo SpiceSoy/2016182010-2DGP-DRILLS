@@ -5,10 +5,12 @@ import random
 class Ball:
     def __init__(self):
         self.x, self.y = random.randint(50, 750), 599
-        self.speed = random.randint(1, 10)
+        self.speed = random.randint(5, 15)
         if random.randint(0, 1) == 0:
+            self.end_y = 65
             self.image = pico2d.load_image('ball21x21.png')
         else:
+            self.end_y = 75
             self.image = pico2d.load_image('ball41x41.png')
 
     def draw(self):
@@ -16,7 +18,7 @@ class Ball:
 
     def update(self):
         for i in range(self.speed):
-            if self.y < 30:
+            if self.y < self.end_y:
                 break
             else:
                 self.y += -1
@@ -57,7 +59,7 @@ def handle_events():
 # initialization code
 pico2d.open_canvas()
 grass = Grass()
-team = [Boy() for n in range(10)]
+team = [Boy() for n in range(11)]
 balls = [Ball() for n in range(20)]
 running = True
 # game main loop code
