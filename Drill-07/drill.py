@@ -16,10 +16,11 @@ class Ball:
 
     def update(self):
         for i in range(self.speed):
-            if self.x < 30:
+            if self.y < 30:
                 break
             else:
-                self.x += 1
+                self.y += -1
+
 
 class Grass:
     def __init__(self):
@@ -57,18 +58,22 @@ def handle_events():
 pico2d.open_canvas()
 grass = Grass()
 team = [Boy() for n in range(10)]
+balls = [Ball() for n in range(20)]
 running = True
 # game main loop code
 while running:
     handle_events()
     for boy in team:
         boy.update()
-
+    for ball in balls:
+        ball.update()
     clear_canvas()
     grass.draw()
 
     for boy in team:
         boy.draw()
+    for ball in balls:
+        ball.draw()
 
     update_canvas()
     delay(0.05)
