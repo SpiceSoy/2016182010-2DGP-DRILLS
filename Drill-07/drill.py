@@ -2,6 +2,25 @@ from pico2d import *
 import random
 
 
+class Ball:
+    def __init__(self):
+        self.x, self.y = random.randint(50, 750), 599
+        self.speed = random.randint(1, 10)
+        if random.randint(0, 1) == 0:
+            self.image = pico2d.load_image('ball21x21.png')
+        else:
+            self.image = pico2d.load_image('ball41x41.png')
+
+    def draw(self):
+        self.image.draw(self.x, self.y)
+
+    def update(self):
+        for i in range(self.speed):
+            if self.x < 30:
+                break
+            else:
+                self.x += 1
+
 class Grass:
     def __init__(self):
         self.image = pico2d.load_image('grass.png')
