@@ -2,14 +2,19 @@ import game_framework
 import main_state
 from pico2d import *
 
+import main_state
+
 
 name = "PauseState"
 image = None
-
+time = 0
+view = True
 
 def enter():
-    global image
+    global image, time, view
     image = load_image('pause.png')
+    time = 0
+    view = True
 
 
 def exit():
@@ -28,12 +33,23 @@ def handle_events():
 
 def draw():
     clear_canvas()
-    image.draw(400, 300)
+    main_state.grass.draw()
+    main_state.boy.draw()
+    # image = pico2d.Image()
+    if view is True:
+        image.clip_draw(200, 200, 500, 500, 400, 300,200,200)
     update_canvas()
     pass
 
 
 def update():
+    global time, view
+    delay(0.01)
+    time += 1
+    if int(time / 50) % 2 == 0:
+        view = True
+    else:
+        view = False
     pass
 
 
