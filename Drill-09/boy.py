@@ -1,13 +1,17 @@
 from pico2d import *
 
 # Boy Event
-RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP = range(4)
+RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP, DASH_UP, DASH_DOWN, DASH_TIMER = range(7)
 # fill here
 key_event_table = {
     (SDL_KEYDOWN, SDLK_RIGHT): RIGHT_DOWN,
     (SDL_KEYDOWN, SDLK_LEFT): LEFT_DOWN,
     (SDL_KEYUP, SDLK_RIGHT): RIGHT_UP,
-    (SDL_KEYUP, SDLK_LEFT): LEFT_UP
+    (SDL_KEYUP, SDLK_LEFT): LEFT_UP,
+    (SDL_KEYDOWN, SDLK_LSHIFT): DASH_DOWN,
+    (SDL_KEYUP, SDLK_LSHIFT): DASH_UP,
+    (SDL_KEYDOWN, SDLK_RSHIFT): DASH_DOWN,
+    (SDL_KEYUP, SDLK_RSHIFT): DASH_UP
 }
 
 
@@ -22,7 +26,6 @@ class IdleState:
             boy.velocity -= 1
         elif event == LEFT_UP:
             boy.velocity += 1
-        boy.timer = 1000
 
     @staticmethod
     def exit(boy, event):
@@ -64,7 +67,6 @@ class RunState:
     @staticmethod
     def do(boy):
         boy.frame = (boy.frame + 1) % 8
-        boy.timer -= 1
         boy.x += boy.velocity
         boy.x = clamp(25, boy.x, 800 - 25)
 
@@ -76,11 +78,50 @@ class RunState:
             boy.image.clip_draw(boy.frame * 100, 0, 100, 100, boy.x, boy.y)
 
 
+class DashState:
+    @staticmethod
+    def enter(boy, event):
+        if event == RIGHT_DOWN:
+            boy.velocity += 1
+        elif event == LEFT_DOWN:
+            boy.velocity -= 1
+        elif event == RIGHT_UP:
+            boy.velocity -= 1
+        elif event == LEFT_UP:
+            boy.velocity += 1
+        elif event == DASH_DOWN:
+            boy.timer = 100
+        boy.dir = boy.velocity
+
+    @staticmethod
+    def exit(boy, event):
+        boy.timer = 0
+        pass
+
+    @staticmethod
+    def do(boy):
+        boy.frame = (boy.frame + 1) % 8
+        boy.timer -= 1
+        boy.x += boy.velocity * 3
+        boy.x = clamp(25, boy.x, 800 - 25)
+        if boy.timer < 0:
+            boy.add_event(DASH_TIMER)
+
+    @staticmethod
+    def draw(boy):
+        if boy.dir == 1:
+            boy.image.clip_draw(boy.frame * 100, 100, 100, 100, boy.x, boy.y)
+        else:
+            boy.image.clip_draw(boy.frame * 100, 0, 100, 100, boy.x, boy.y)
+
+
 next_state_table = {
-    IdleState: {RIGHT_UP: RunState, LEFT_UP: RunState,
-                RIGHT_DOWN: RunState, LEFT_DOWN: RunState},
-    RunState: {RIGHT_UP: IdleState, LEFT_UP: IdleState,
-               RIGHT_DOWN: IdleState, LEFT_DOWN: IdleState}
+    IdleState: {RIGHT_UP: RunState, LEFT_UP: RunState, RIGHT_DOWN: RunState, LEFT_DOWN: RunState,
+                DASH_UP: IdleState, DASH_DOWN: IdleState, DASH_TIMER: IdleState},
+    RunState: {RIGHT_UP: IdleState, LEFT_UP: IdleState, RIGHT_DOWN: IdleState, LEFT_DOWN: IdleState,
+               DASH_UP: RunState, DASH_DOWN: DashState, DASH_TIMER: RunState},
+    DashState: {RIGHT_UP: IdleState, LEFT_UP: IdleState, RIGHT_DOWN: IdleState, LEFT_DOWN: IdleState,
+                DASH_UP: RunState, DASH_DOWN: DashState, DASH_TIMER: RunState}
 }
 
 
