@@ -1,7 +1,7 @@
 from pico2d import *
 
 # Boy Event
-RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP, DASH_UP, DASH_DOWN, DASH_TIMER = range(7)
+RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP, DASH_UP, DASH_DOWN, DASH_TIMER, SLEEP_TIMER = range(8)
 # fill here
 key_event_table = {
     (SDL_KEYDOWN, SDLK_RIGHT): RIGHT_DOWN,
