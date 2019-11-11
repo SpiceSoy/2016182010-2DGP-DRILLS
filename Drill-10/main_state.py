@@ -6,7 +6,7 @@ from pico2d import *
 import game_framework
 import game_world
 
-from boy import Boy
+from bird import Bird
 from grass import Grass
 
 
@@ -16,7 +16,7 @@ boy = None
 
 def enter():
     global boy
-    boy = Boy()
+    boy = Bird()
     grass = Grass()
     game_world.add_object(grass, 0)
     game_world.add_object(boy, 1)
