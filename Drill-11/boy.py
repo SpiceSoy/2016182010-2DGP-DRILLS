@@ -11,6 +11,8 @@ RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 
+GRAVITY_SPEED_PPS = (9.8 * PIXEL_PER_METER)
+
 # Boy Action Speed
 TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
@@ -49,7 +51,7 @@ class IdleState:
     @staticmethod
     def exit(boy, event):
         if event == SPACE:
-            boy.fire_ball()
+            boy.jump()
         pass
 
     @staticmethod
@@ -84,7 +86,7 @@ class RunState:
     @staticmethod
     def exit(boy, event):
         if event == SPACE:
-            boy.fire_ball()
+            boy.jump()
 
     @staticmethod
     def do(boy):
@@ -134,7 +136,6 @@ next_state_table = {
 }
 
 class Boy:
-
     def __init__(self):
         self.x, self.y = 1600 // 2, 90
         # Boy is only once created, so instance image loading is fine
@@ -146,13 +147,17 @@ class Boy:
         self.event_que = []
         self.cur_state = IdleState
         self.cur_state.enter(self, None)
+        self.velocity_y = 0
+        self.jump_power = 400.0
+        self.is_can_jump = False
 
     def get_bb(self):
-        return self.x - 50, self.y -50, self.x + 50, self.y + 50
+        return self.x - 20, self.y - 38, self.x + 20, self.y + 42
 
-    def fire_ball(self):
-        ball = Ball(self.x, self.y, self.dir * RUN_SPEED_PPS * 10)
-        game_world.add_object(ball, 1)
+    def jump(self):
+        if self.is_can_jump:
+            self.velocity_y = self.jump_power
+            self.is_can_jump = False
 
 
     def add_event(self, event):
@@ -160,11 +165,28 @@ class Boy:
 
     def update(self):
         self.cur_state.do(self)
+        self.y += self.velocity_y * game_framework.frame_time
+        self.velocity_y -= GRAVITY_SPEED_PPS * game_framework.frame_time
         if len(self.event_que) > 0:
             event = self.event_que.pop()
             self.cur_state.exit(self, event)
             self.cur_state = next_state_table[self.cur_state][event]
             self.cur_state.enter(self, event)
+
+    def on_ground(self, obj):
+        if self.velocity_y < 0.0:
+            self.velocity_y = 0
+            self.is_can_jump = True
+
+    def on_block(self, obj):
+        if obj.velocity * self.velocity >= 0 :
+            self.x += obj.velocity * game_framework.frame_time
+        if obj.y > self.y:
+            self.velocity_y = -1 * abs(self.velocity_y)
+        elif self.velocity_y < 0.0 and (obj.get_bb()[0] <= self.x <= obj.get_bb()[2]):
+            self.velocity_y = 0
+            self.y += obj.get_bb()[3] - self.get_bb()[1]
+            self.is_can_jump = True
 
     def draw(self):
         self.cur_state.draw(self)

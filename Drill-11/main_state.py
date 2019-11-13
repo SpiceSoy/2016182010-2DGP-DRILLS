@@ -95,6 +95,12 @@ def update():
             # ball.stop()
             ball.on_collide(block)
 
+    if collide(boy, grass):
+        boy.on_ground(grass)
+
+    if collide(boy, block):
+        boy.on_block(block)
+
 
 def draw():
     clear_canvas()

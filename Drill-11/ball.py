@@ -24,7 +24,8 @@ class Ball:
 
     def on_collide(self, obj):
         if type(obj) is Block:
-            self.x += obj.velocity * game_framework.frame_time
+            if (self.x > obj.get_bb()[0] and obj.velocity > 0) or (self.x < obj.get_bb()[2] and obj.velocity < 0):
+                self.x += obj.velocity * game_framework.frame_time
             if obj.get_bb()[0] <= self.x <= obj.get_bb()[2]:
                 self.y += self.fall_speed * game_framework.frame_time
 
