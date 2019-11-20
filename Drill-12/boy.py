@@ -115,6 +115,8 @@ class Boy:
         self.cur_state = WalkingState
         self.cur_state.enter(self, None)
 
+        self.hp = 100
+
     def get_bb(self):
         # fill here
         return self.x - 50, self.y - 50, self.x + 50, self.y + 50

@@ -47,6 +47,8 @@ class Zombie:
         self.frame = 0
         self.build_behavior_tree()
 
+        self.hp = 100
+
     def calculate_current_position(self):
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
         self.x += self.speed * math.cos(self.dir) * game_framework.frame_time
