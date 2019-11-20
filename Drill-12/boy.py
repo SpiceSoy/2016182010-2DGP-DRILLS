@@ -1,6 +1,8 @@
 import game_framework
 from pico2d import *
 
+import main_state
+
 import game_world
 
 # Boy Run Speed
@@ -115,7 +117,7 @@ class Boy:
         self.cur_state = WalkingState
         self.cur_state.enter(self, None)
 
-        self.hp = 100
+        self.hp = 0
 
     def get_bb(self):
         # fill here
@@ -124,6 +126,13 @@ class Boy:
 
     def add_event(self, event):
         self.event_que.insert(0, event)
+
+    def on_collide_zombie(self, zombie):
+        if zombie.hp >= self.hp:
+            game_world.remove_object(self)
+            game_framework.change_state(main_state)
+        else:
+            game_world.remove_object(zombie)
 
     def update(self):
         self.cur_state.do(self)
@@ -135,7 +144,7 @@ class Boy:
 
     def draw(self):
         self.cur_state.draw(self)
-        self.font.draw(self.x - 60, self.y + 50, '(Time: %3.2f)' % get_time(), (255, 255, 0))
+        self.font.draw(self.x, self.y + 55, str(self.hp), (255, 0, 0))
         #fill here
         draw_rectangle(*self.get_bb())
         #debug_print('Velocity :' + str(self.velocity) + '  Dir:' + str(self.dir) + ' Frame Time:' + str(game_framework.frame_time))

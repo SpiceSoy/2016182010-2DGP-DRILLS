@@ -49,7 +49,7 @@ def enter():
     game_world.add_object(zombie, 1)
 
     global balls
-    balls = [Ball() for n in range(50)]
+    balls = [Ball() for n in range(30)]
     game_world.add_objects(balls, 1)
 
     ground = Ground()
@@ -81,10 +81,14 @@ def update():
     for game_object in game_world.all_objects():
         game_object.update()
 
-    for ball in balls:
-        if collide(boy, ball):
-            ball.on_collide(boy)
+    for b in balls:
+        if collide(boy, b):
+            b.on_collide(boy)
+        elif collide(zombie, b):
+            b.on_collide(zombie)
 
+    if collide(zombie,boy):
+        boy.on_collide_zombie(zombie)
 
 def draw():
     clear_canvas()

@@ -23,6 +23,8 @@ animation_names = ['Attack', 'Dead', 'Idle', 'Walk']
 
 class Zombie:
     images = None
+    ball_dist = 5
+    boy_dist = 8
 
     def load_images(self):
         if Zombie.images == None:
@@ -32,14 +34,14 @@ class Zombie:
 
     def __init__(self):
         # positions
-        positions = [(43,750),(1118,750),(1050,530),(575,220),(235,33),(575,220),(1050,530),(1118,750)]
+        positions = [(500,750),(1118,750),(1050,530),(575,220),(235,33),(575,220),(1050,530),(1118,750)]
         self.patrol_positions = []
         for p in positions:
             self.patrol_positions.append((p[0], 1024 - p[1]))
         self.patrol_order = 1
         self.target_x, self.target_y = None, None
         self.x, self.y = self.patrol_positions[0]
-
+        self.font = load_font('ENCR10B.TTF', 16)
         self.load_images()
         self.dir = random.random()*2*math.pi # random moving direction
         self.speed = 0
@@ -47,7 +49,7 @@ class Zombie:
         self.frame = 0
         self.build_behavior_tree()
 
-        self.hp = 100
+        self.hp = 0
 
     def calculate_current_position(self):
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
@@ -80,10 +82,50 @@ class Zombie:
         self.calculate_current_position()
         return BehaviorTree.SUCCESS
 
+    def escape_to_player(self):
+        self.speed = RUN_SPEED_PPS * 1.25
+        self.dir += math.radians(180)
+        self.calculate_current_position()
+        return BehaviorTree.SUCCESS
+
     def get_next_position(self):
         self.target_x, self.target_y = self.patrol_positions[self.patrol_order % len(self.patrol_positions)]
         self.patrol_order += 1
         self.dir = math.atan2(self.target_y - self.y, self.target_x - self.x)
+        return BehaviorTree.SUCCESS
+
+    def check_hp_boy(self):
+        boy = main_state.get_boy()
+        print(f"CHeck HP : {self.hp } ,{ boy.hp}")
+        if self.hp >= boy.hp:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+
+    def find_ball(self):
+        balls = main_state.get_balls()
+        if len(balls) != 0:
+            dist = ((Zombie.ball_dist + 2) * PIXEL_PER_METER) ** 2
+            dest = None
+            for ball in balls:
+                if ball.is_collide:
+                    continue
+                else:
+                    cur_dist = (ball.x - self.x) ** 2 + (ball.y - self.y) ** 2
+                    if (cur_dist < (Zombie.ball_dist * PIXEL_PER_METER) ** 2) and (cur_dist < dist):
+                        dest = ball
+                        dist = cur_dist
+            if dest is not None:
+                self.dir = math.atan2(dest.y - self.y, dest.x - self.x)
+                return BehaviorTree.SUCCESS
+            else:
+                return BehaviorTree.FAIL
+        else:
+            return BehaviorTree.FAIL
+
+    def move_to_ball(self):
+        self.speed = RUN_SPEED_PPS
+        self.calculate_current_position()
         return BehaviorTree.SUCCESS
 
     def move_to_target(self):
@@ -98,14 +140,36 @@ class Zombie:
             return BehaviorTree.RUNNING
 
     def build_behavior_tree(self):
-        wander_node = LeafNode("Wander",self.wander)
-        find_player_node = LeafNode("Find Player",self.find_player)
+        check_hp_node = LeafNode("Check Hp Differ", self.check_hp_boy)
         move_to_player_node = LeafNode("Move to Player", self.move_to_player)
-        chase_node = SequenceNode("Chase")
-        chase_node.add_children(find_player_node,move_to_player_node)
-        wander_chase_node = SelectorNode("WanderChase")
-        wander_chase_node.add_children(chase_node, wander_node)
-        self.bt = BehaviorTree(wander_chase_node)
+        chase_node = SequenceNode("Chase Player")
+        chase_node.add_children(check_hp_node, move_to_player_node)
+
+        escape_node = LeafNode("Escape From Player", self.escape_to_player)
+
+        chase_or_run_node = SelectorNode("Chase Or Run")
+        chase_or_run_node.add_children(chase_node, escape_node)
+
+        find_player_node = LeafNode("Find Player", self.find_player)
+
+        player_interaction_node = SequenceNode("Player Interaction")
+        player_interaction_node.add_children(find_player_node, chase_or_run_node)
+
+        find_ball_node = LeafNode("Find Ball", self.find_ball)
+        move_to_ball_node = LeafNode("Move To Ball", self.move_to_ball)
+
+        ball_interaction_node = SequenceNode("Ball Interaction")
+        ball_interaction_node.add_children(find_ball_node, move_to_ball_node)
+
+        chase_things_node = SelectorNode("Chase Something")
+        chase_things_node.add_children(player_interaction_node, ball_interaction_node)
+
+        wander_node = LeafNode("Wander",self.wander)
+
+        parent_node = SelectorNode("Zombie AI")
+        parent_node.add_children(chase_things_node, wander_node)
+
+        self.bt = BehaviorTree(parent_node)
 
     def get_bb(self):
         return self.x - 50, self.y - 50, self.x + 50, self.y + 50
@@ -126,7 +190,8 @@ class Zombie:
                 Zombie.images['Idle'][int(self.frame)].draw(self.x, self.y, 100, 100)
             else:
                 Zombie.images['Walk'][int(self.frame)].draw(self.x, self.y, 100, 100)
-
+        self.font.draw(self.x, self.y + 55, str(self.hp), (255, 0, 0))
+        draw_rectangle(*self.get_bb())
     def handle_event(self, event):
         pass
 
